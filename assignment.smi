@@ -1,0 +1,66 @@
+<smil>
+
+  <head>
+
+    <title>My SMIL Multimedia Assignment</title>
+
+    <layout>
+
+      <root-layout width="800"
+                   height="500"
+                   background-color="white"/>
+
+      <region id="imageregion"
+              left="0"
+              top="0"
+              width="400"
+              height="300"/>
+
+      <region id="videoregion"
+              left="400"
+              top="0"
+              width="400"
+              height="300"/>
+
+      <region id="textregion"
+              left="0"
+              top="300"
+              width="800"
+              height="200"/>
+
+    </layout>
+
+  </head>
+
+
+  <body>
+
+    <par>
+
+      <!-- Display the house image -->
+
+      <image src="images/house.jpg"
+             region="imageregion"/>
+
+
+      <!-- Play the silent video -->
+
+      <video src="video/video.mp4"
+             region="videoregion"/>
+
+
+      <!-- Play the separate audio with the video -->
+
+      <audio src="audio/audio.wav"/>
+
+
+      <!-- Display the text -->
+
+      <text src="text/message.txt"
+            region="textregion"/>
+
+    </par>
+
+  </body>
+
+</smil>

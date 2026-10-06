@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SMIL Multimedia Assignment</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        header {
+            background: #1d3557;
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .media-box {
+            background: black;
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .media-box img,
+        .media-box video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .seek {
+            width: 100%;
+            margin-top: 18px;
+        }
+
+        .time {
+            margin: 4px 0 14px;
+            font-size: 16px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        button {
+            border: none;
+            background: #1d3557;
+            color: white;
+            padding: 13px 17px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .description {
+            margin-top: 20px;
+            padding: 18px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        #status {
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+            .media-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>SMIL Multimedia Assignment</h1>
+
+    <p>
+        Video, audio, image and text synchronized
+        in one multimedia presentation
+    </p>
+</header>
+
+
+<main class="container">
+
+    <!-- IMAGE AND VIDEO -->
+
+    <div class="media-grid">
+
+        <!-- IMAGE -->
+
+        <div class="media-box">
+            <img
+                src="images/House.jpg"
+                alt="House">
+        </div>
+
+
+        <!-- VIDEO -->
+
+        <div class="media-box">
+
+            <video
+                id="video"
+                preload="metadata">
+
+                <source
+                    src="video/video.mp4"
+                    type="video/mp4">
+
+                Your browser does not support HTML5 video.
+
+            </video>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEPARATE AUDIO FILE -->
+
+    <audio
+        id="audio"
+        preload="metadata">
+
+        <source
+            src="audio/audio.mp3"
+            type="audio/mpeg">
+
+    </audio>
+
+
+    <!-- SEEK BAR -->
+
+    <input
+        id="seek"
+        class="seek"
+        type="range"
+        min="0"
+        max="100"
+        value="0"
+        step="0.1">
+
+
+    <!-- TIME -->
+
+    <div class="time">
+
+        <span id="current">00:00</span>
+
+        /
+
+        <span id="duration">00:00</span>
+
+    </div>
+
+
+    <!-- CONTROLS -->
+
+    <div class="controls">
+
+        <button onclick="skip(-3)">
+            ⏪ -3 sec
+        </button>
+
+        <button onclick="playMedia()">
+            ▶ Play
+        </button>
+
+        <button onclick="pauseMedia()">
+            ⏸ Pause
+        </button>
+
+        <button onclick="skip(3)">
+            ⏩ +3 sec
+        </button>
+
+        <button onclick="restartMedia()">
+            ↻ Restart
+        </button>
+
+        <button onclick="sharePage()">
+            🔗 Share Link
+        </button>
+
+        <button onclick="downloadVideo()">
+            ↓ Download Video
+        </button>
+
+    </div>
+
+
+    <!-- STATUS MESSAGE -->
+
+    <div id="status"></div>
+
+
+    <!-- TEXT CONTENT -->
+
+    <section class="description">
+
+        <h2>Multimedia Presentation</h2>
+
+        <p>
+            This presentation demonstrates the
+            synchronization of video, audio,
+            images and text.
+        </p>
+
+        <p>
+            The video and audio are stored as
+            separate media files and are played
+            together.
+        </p>
+
+    </section>
+
+</main>
+
+
+<script>
+
+    // Get multimedia elements
+
+    const video =
+        document.getElementById("video");
+
+    const audio =
+        document.getElementById("audio");
+
+    const seek =
+        document.getElementById("seek");
+
+    const current =
+        document.getElementById("current");
+
+    const duration =
+        document.getElementById("duration");
+
+    const status =
+        document.getElementById("status");
+
+
+    // Format seconds into minutes and seconds
+
+    function formatTime(seconds) {
+
+        if (!Number.isFinite(seconds)) {
+            return "00:00";
+        }
+
+        const minutes =
+            Math.floor(seconds / 60);
+
+        const secs =
+            Math.floor(seconds % 60);
+
+        return (
+            String(minutes).padStart(2, "0")
+            +
+            ":"
+            +
+            String(secs).padStart(2, "0")
+        );
+    }
+
+
+    // Set video and audio to same position
+
+    function setMediaTime(time) {
+
+        let newTime = time;
+
+        if (Number.isFinite(video.duration)) {
+
+            newTime =
+                Math.max(
+                    0,
+                    Math.min(
+                        time,
+                        video.duration
+                    )
+                );
+        }
+
+
+        video.currentTime = newTime;
+
+
+        if (Number.isFinite(audio.duration)) {
+
+            audio.currentTime =
+                Math.min(
+                    newTime,
+                    audio.duration
+                );
+        }
+    }
+
+
+    // PLAY
+
+    async function playMedia() {
+
+        setMediaTime(
+            video.currentTime
+        );
+
+        try {
+
+            await video.play();
+
+            await audio.play();
+
+            status.textContent = "";
+
+        }
+
+        catch (error) {
+
+            status.textContent =
+                "Press Play again if the browser blocked audio playback.";
+
+        }
+    }
+
+
+    // PAUSE
+
+    function pauseMedia() {
+
+        video.pause();
+
+        audio.pause();
+
+    }
+
+
+    // RESTART
+
+    function restartMedia() {
+
+        pauseMedia();
+
+        setMediaTime(0);
+
+        seek.value = 0;
+
+        current.textContent =
+            "00:00";
+
+    }
+
+
+    // SEEK 3 SECONDS FORWARD/BACKWARD
+
+    function skip(seconds) {
+
+        const wasPlaying =
+            !video.paused;
+
+        const newTime =
+            video.currentTime
+            +
+            seconds;
+
+        setMediaTime(newTime);
+
+
+        // Continue playing if it was already playing
+
+        if (wasPlaying) {
+
+            video.play();
+
+            audio.play()
+                .catch(() => {});
+
+        }
+    }
+
+
+    // GET VIDEO DURATION
+
+    video.addEventListener(
+        "loadedmetadata",
+        function () {
+
+            duration.textContent =
+                formatTime(
+                    video.duration
+                );
+
+        }
+    );
+
+
+    // UPDATE SEEK BAR
+
+    video.addEventListener(
+        "timeupdate",
+        function () {
+
+            if (video.duration) {
+
+                seek.value =
+                    (
+                        video.currentTime
+                        /
+                        video.duration
+                    )
+                    *
+                    100;
+
+
+                current.textContent =
+                    formatTime(
+                        video.currentTime
+                    );
+
+
+                // Keep audio synchronized
+
+                if (
+                    !audio.paused
+                    &&
+                    Math.abs(
+                        audio.currentTime
+                        -
+                        video.currentTime
+                    )
+                    >
+                    0.35
+                ) {
+
+                    audio.currentTime =
+                        Math.min(
+                            video.currentTime,
+                            audio.duration
+                            ||
+                            video.currentTime
+                        );
+
+                }
+            }
+        }
+    );
+
+
+    // MANUAL SEEKING USING SLIDER
+
+    seek.addEventListener(
+        "input",
+        function () {
+
+            if (video.duration) {
+
+                const time =
+                    (
+                        Number(seek.value)
+                        /
+                        100
+                    )
+                    *
+                    video.duration;
+
+
+                setMediaTime(time);
+
+
+                current.textContent =
+                    formatTime(time);
+
+            }
+        }
+    );
+
+
+    // STOP AUDIO WHEN VIDEO ENDS
+
+    video.addEventListener(
+        "ended",
+        function () {
+
+            audio.pause();
+
+        }
+    );
+
+
+    // SHARE LINK
+
+    async function sharePage() {
+
+        // Local files cannot produce a public link
+
+        if (
+            location.protocol
+            ===
+            "file:"
+        ) {
+
+            status.textContent =
+                "This project is currently stored locally. Upload it online to create a shareable link.";
+
+            return;
+        }
+
+
+        try {
+
+            if (navigator.share) {
+
+                await navigator.share({
+
+                    title:
+                        document.title,
+
+                    url:
+                        location.href
+
+                });
+
+            }
+
+            else {
+
+                await navigator.clipboard
+                    .writeText(
+                        location.href
+                    );
+
+
+                status.textContent =
+                    "Share link copied to clipboard.";
+
+            }
+
+        }
+
+        catch (error) {
+
+            status.textContent =
+                "Sharing was cancelled.";
+
+        }
+    }
+
+
+    // DOWNLOAD VIDEO
+
+    async function downloadVideo() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "video/video.mp4"
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Video unavailable"
+                );
+
+            }
+
+
+            const blob =
+                await response.blob();
+
+
+            const url =
+                URL.createObjectURL(
+                    blob
+                );
+
+
+            const link =
+                document.createElement(
+                    "a"
+                );
+
+
+            link.href = url;
+
+            link.download =
+                "video.mp4";
+
+
+            document.body
+                .appendChild(
+                    link
+                );
+
+
+            link.click();
+
+
+            link.remove();
+
+
+            setTimeout(
+                function () {
+
+                    URL.revokeObjectURL(
+                        url
+                    );
+
+                },
+                1000
+            );
+
+
+            status.textContent =
+                "Video download started.";
+
+        }
+
+        catch (error) {
+
+            // Fallback
+
+            window.open(
+                "video/video.mp4",
+                "_blank"
+            );
+
+
+            status.textContent =
+                "The video opened in a new tab. Use the browser download button to save it.";
+
+        }
+    }
+
+</script>
+
+</body>
+</html>
