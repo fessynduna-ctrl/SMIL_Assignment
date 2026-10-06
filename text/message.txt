@@ -1,0 +1,3 @@
+Welcome to my SMIL Multimedia Presentation.
+
+This presentation demonstrates the synchronization of text, images, audio and video using SMIL.
